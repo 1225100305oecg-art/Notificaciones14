@@ -15,6 +15,25 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
+gradle.projectsEvaluated {
+    subprojects.forEach { sub ->
+        val androidExt = sub.extensions.findByName("android")
+        if (androidExt != null) {
+            try {
+                val method = androidExt.javaClass.getMethod("setCompileSdk", Int::class.javaPrimitiveType)
+                method.invoke(androidExt, 36)
+            } catch (_: Exception) {
+                try {
+                    val method = androidExt.javaClass.getMethod("compileSdk", Int::class.javaPrimitiveType)
+                    method.invoke(androidExt, 36)
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(":app")
 }
