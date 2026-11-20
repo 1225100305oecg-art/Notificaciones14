@@ -8,9 +8,9 @@ class DibujoAjolote extends StatelessWidget {
   final Humor humor;
 
   String get _cara => switch (humor) {
-        Humor.feliz => '😊',
-        Humor.hambriento => '😋',
-        Humor.famelico => '😭',
+        Humor.feliz => '',
+        Humor.hambriento => '',
+        Humor.famelico => '',
       };
 
   @override
