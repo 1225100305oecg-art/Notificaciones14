@@ -1,56 +1,47 @@
-plugins {
-    id("com.android.application")
-    id("dev.flutter.flutter-gradle-plugin")
-}
-
-android {
-    namespace = "com.example.ajolotito"
-    compileSdk = 36
-    ndkVersion = flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
-    }
-
-    defaultConfig {
-        applicationId = "com.example.ajolotito"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 36
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug")
-        }
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
+val newBuildDir: Directory =
+    rootProject.layout.buildDirectory
+        .dir("../../build")
+        .get()
+rootProject.layout.buildDirectory.value(newBuildDir)
+
+subprojects {
+    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
+    project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 
-flutter {
-    source = "../.."
-}
-
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-}
 subprojects {
     afterEvaluate {
-        val androidExtension = extensions.findByName("android")
-        if (androidExtension != null) {
+        val androidExt = extensions.findByName("android")
+        if (androidExt != null) {
             try {
-                val setCompileSdk = androidExtension.javaClass.getMethod("setCompileSdk", Int::class.javaPrimitiveType)
-                setCompileSdk.invoke(androidExtension, 36)
+                val setter = androidExt.javaClass.getMethod("setCompileSdk", Int::class.javaPrimitiveType)
+                setter.invoke(androidExt, 36)
             } catch (_: Exception) {
+                try {
+                    val prop = androidExt.javaClass.getMethod("getCompileSdkVersion")
+                    val current = prop.invoke(androidExt)
+                    if (current != null) {
+                        val setVersion = androidExt.javaClass.getMethod("setCompileSdkVersion", Int::class.javaPrimitiveType)
+                        setVersion.invoke(androidExt, 36)
+                    }
+                } catch (_: Exception) {
+                }
             }
         }
     }
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
