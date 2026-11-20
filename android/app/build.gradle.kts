@@ -42,3 +42,15 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
+subprojects {
+    afterEvaluate {
+        val androidExtension = extensions.findByName("android")
+        if (androidExtension != null) {
+            try {
+                val setCompileSdk = androidExtension.javaClass.getMethod("setCompileSdk", Int::class.javaPrimitiveType)
+                setCompileSdk.invoke(androidExtension, 36)
+            } catch (_: Exception) {
+            }
+        }
+    }
+}
