@@ -11,7 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   app_settings: ^6.1.1
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^20.1.0
+  shared_preferences: ^2.3.3
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:
